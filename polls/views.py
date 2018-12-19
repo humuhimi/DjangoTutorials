@@ -9,7 +9,7 @@ from django.http import Http404
 from django.shortcuts import render,get_object_or_404
 from django.urls import reverse
 from django.views import generic
-
+from django.utils import timezone
 
 # def index(request):
 #     latest_question_list = Question.objects.order_by('-pub_date')[:5]
@@ -58,13 +58,16 @@ from django.views import generic
 
 # try generic views
 
+
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        """最後に発行されたquestionsを返す"""
-        return Question.objects.order_by('-pub_date')[:5]
+        """最後に発行されたquestionsを返す(未来のものは含まない)"""
+        # return Question.objects.order_by('-pub_date')[:5]
+        return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
+# lte=は <==　と同義
 
 
 class DetailView(generic.DetailView):
